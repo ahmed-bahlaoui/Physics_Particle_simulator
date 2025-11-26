@@ -13,7 +13,7 @@ std::vector<Projectile> spawnProjectiles(int n) {
     std::vector<Projectile> new_list;
     for (int i = 0; i < n; i++) {
         float random_mass = (10 * (float)rand() / RAND_MAX) + 5;
-        float random_radius = (10 * (float)rand() / RAND_MAX) + 5; // [5, 15]
+        float random_radius = (10 * (float)rand() / RAND_MAX) + 10; // [10, 20]
         float random_X =
             window_width * ((float)rand() / RAND_MAX); // [0,window_width]
         float random_Y =
@@ -21,15 +21,15 @@ std::vector<Projectile> spawnProjectiles(int n) {
         float random_Vx = (100 * (float)rand() / RAND_MAX) - 50; //[-50, 50]
         float random_Vy = (100 * (float)rand() / RAND_MAX) - 50; //[-50, 50]
         if (i % 2 == 0) {
-            // color Red
+            // color RED
             new_list.push_back(Projectile(
                 random_mass, random_radius, Vector2D(random_X, random_Y),
                 Vector2D(random_Vx, random_Vy), sf::Color::Red));
         } else {
-            // color Green
+            // color BLUE
             new_list.push_back(Projectile(
                 random_mass, random_radius, Vector2D(random_X, random_Y),
-                Vector2D(random_Vx, random_Vy), sf::Color::Green));
+                Vector2D(random_Vx, random_Vy), sf::Color::Blue));
         }
     }
     return new_list;
@@ -45,7 +45,7 @@ int main() {
     // Try loading Arial from the Windows system folder
     // (If you are on Linux/Mac, you might need a different path or a local
     // file)
-    if (!font.openFromFile("C:/Windows/Fonts/Arial.ttf")) {
+    if (!font.openFromFile("arial.ttf")) {
         // If this fails, make sure you have a .ttf file in your project folder
         // and change the path to "arial.ttf"
         return -1;
