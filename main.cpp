@@ -1,4 +1,5 @@
 #include "Projectile.hpp"
+#include "Slider.hpp"
 #include <SFML/Graphics.hpp>
 #include <algorithm> // <--- NEW: Needed for std::clamp (optional but good)
 #include <string>    // <--- NEW: Needed to convert float to string
@@ -50,7 +51,7 @@ int main() {
         // and change the path to "arial.ttf"
         return -1;
     }
-    sf::Color bg_color = sf::Color::White;
+    sf::Color bg_color = sf::Color::Black;
     sf::Text eText(font);
     eText.setCharacterSize(24);
     if (bg_color == sf::Color::Black) {
@@ -60,11 +61,24 @@ int main() {
     }
     // ------------------------------
 
+    // Create a slider: X=50, Y=550, Width=200, Range=1 to 100, Start=20
+    SimpleSlider projectileSlider(50.f, window_height - 50.f, 200.f, 1.f, 100.f,
+                                  20.f);
+    sf::Text countText(font);
+    countText.setCharacterSize(20);
+    countText.setPosition({270.f, window_height - 60.f}); // Next to slider
+    if (bg_color == sf::Color::White) {
+        countText.setFillColor(sf::Color::Black);
+    } else {
+        countText.setFillColor(sf::Color::White);
+    }
+
     // 2. SETUP Physics
 
     float dt = 0.1;
-    float e = 1.0f;                     // Start with elastic collision
-    projectiles = spawnProjectiles(50); // Let's start with 50 balls!
+    float e = 1.0f;
+    int count = 50;                        // Start with elastic collision
+    projectiles = spawnProjectiles(count); // Let's start with 50 balls!
 
     while (window.isOpen()) {
         while (const auto event = window.pollEvent()) {
@@ -87,6 +101,15 @@ int main() {
                 if (e < 0.0f)
                     e = 0.0f;
             }
+
+            if (const auto *keyPress = event->getIf<sf::Event::KeyPressed>()) {
+                // ... Up/Down logic ...
+
+                // NEW: Press R to respawn with slider count
+                if (keyPress->code == sf::Keyboard::Key::R) {
+                    projectiles = spawnProjectiles(projectileSlider.getValue());
+                }
+            }
             // ---------------------------
         }
 
@@ -106,7 +129,11 @@ int main() {
                           // 20 pixels padding from bottom
         );
         // ------------------------
-
+        // NEW: Update Slider
+        projectileSlider.update(window);
+        countText.setString(
+            "Count: " + std::to_string(projectileSlider.getValue()) +
+            " (Press R)");
         // C. Render
 
         window.clear(bg_color);
@@ -132,8 +159,10 @@ int main() {
         }
 
         // Don't forget to draw the text!
+        // NEW: Draw UI
+        projectileSlider.draw(window);
+        window.draw(countText);
         window.draw(eText);
-
         window.display();
     }
 
