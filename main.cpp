@@ -41,6 +41,8 @@ int main() {
     sf::RenderWindow window(sf::VideoMode({window_width, window_height}),
                             "Physics Collision Simulation");
     window.setFramerateLimit(MAX_FRAMERATE);
+    // --- UI LAYOUT SETUP ---
+    float uiY = window_height - 50.f; // The common baseline height
 
     // --- NEW: FONT & TEXT SETUP ---
     sf::Font font;
@@ -53,7 +55,7 @@ int main() {
         return -1;
     }
     int projectile_count = 50;
-    sf::Color bg_color = sf::Color::Black;
+    sf::Color bg_color = sf::Color::White;
     sf::Text eText(font);
     eText.setCharacterSize(24);
     if (bg_color == sf::Color::Black) {
@@ -64,11 +66,11 @@ int main() {
     // ------------------------------
 
     // Create a slider: X=50, Y=550, Width=200, Range=1 to 100, Start=20
-    SimpleSlider projectileSlider(50.f, window_height - 50.f, 200.f, 1.f, 100.f,
+    SimpleSlider projectileSlider(50.f, uiY, 200.f, 1.f, 100.f,
                                   (float)projectile_count);
     sf::Text countText(font);
     countText.setCharacterSize(20);
-    countText.setPosition({270.f, window_height - 60.f}); // Next to slider
+    countText.setPosition({270.f, uiY}); // Next to slider
     if (bg_color == sf::Color::White) {
         countText.setFillColor(sf::Color::Black);
     } else {
@@ -114,14 +116,22 @@ int main() {
             }
         }
 
-        // --- TEXT/SLIDER UPDATES (Keep this) ---
+        // --- TEXT/SLIDER UPDATES ---
         projectileSlider.update(window);
+
+        // 1. Update the string first
         eText.setString("elasticity coefficient = " +
                         std::to_string(e).substr(0, 3));
+
+        // 2. NEW: Calculate the width and anchor it to the bottom-right
+        sf::FloatRect textBounds = eText.getLocalBounds();
+        eText.setPosition({
+            window_width - textBounds.size.x - 20.f, uiY // 20px padding
+        });
+
         countText.setString(
             "Count: " + std::to_string(projectileSlider.getValue()) +
             " (Press R)");
-
         // =====================================================
         // PHASE 1: UPDATE PHYSICS 🏃
         // =====================================================
