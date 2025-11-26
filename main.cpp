@@ -94,12 +94,19 @@ int main() {
                 } else if (keyPress->code == sf::Keyboard::Key::Down) {
                     e -= 0.1f;
                 }
-
                 // Keep e between 0.0 and 1.0
                 if (e > 1.0f)
                     e = 1.0f;
                 if (e < 0.0f)
                     e = 0.0f;
+                if (keyPress->code == sf::Keyboard::Key::Left) {
+                    // TODO: Decrease projectileSlider value by 5
+                    projectileSlider.setValue(projectileSlider.getValue() - 5);
+
+                } else if (keyPress->code == sf::Keyboard::Key::Right) {
+                    // TODO: Increase projectileSlider value by 5
+                    projectileSlider.setValue(projectileSlider.getValue() + 5);
+                }
             }
 
             if (const auto *keyPress = event->getIf<sf::Event::KeyPressed>()) {

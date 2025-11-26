@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <algorithm>
 #include <cmath>
 
 class SimpleSlider {
@@ -65,6 +66,18 @@ class SimpleSlider {
     }
 
     int getValue() const { return static_cast<int>(currentValue); }
+    void setValue(float newValue) {
+        // 1. Clamp the value so it stays within range (e.g., 1 to 100)
+        currentValue = std::clamp(newValue, minValue, maxValue);
+
+        // 2. Calculate where the knob should be visually
+        // (This is the reverse of the math in the update() function!)
+        float percentage = (currentValue - minValue) / (maxValue - minValue);
+
+        // Use the track's stored position and size
+        float newX = track.getPosition().x + (percentage * track.getSize().x);
+        knob.setPosition({newX, track.getPosition().y + 2});
+    }
 
   private:
     void updateKnobPosition(float x, float width) {
