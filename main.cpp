@@ -51,6 +51,7 @@ int main() {
         // and change the path to "arial.ttf"
         return -1;
     }
+    int projectile_count = 50;
     sf::Color bg_color = sf::Color::Black;
     sf::Text eText(font);
     eText.setCharacterSize(24);
@@ -63,7 +64,7 @@ int main() {
 
     // Create a slider: X=50, Y=550, Width=200, Range=1 to 100, Start=20
     SimpleSlider projectileSlider(50.f, window_height - 50.f, 200.f, 1.f, 100.f,
-                                  20.f);
+                                  (float)projectile_count);
     sf::Text countText(font);
     countText.setCharacterSize(20);
     countText.setPosition({270.f, window_height - 60.f}); // Next to slider
@@ -77,8 +78,9 @@ int main() {
 
     float dt = 0.1;
     float e = 1.0f;
-    int count = 50;                        // Start with elastic collision
-    projectiles = spawnProjectiles(count); // Let's start with 50 balls!
+    // Start with elastic collision
+    projectiles =
+        spawnProjectiles(projectile_count); // Let's start with 50 balls!
 
     while (window.isOpen()) {
         while (const auto event = window.pollEvent()) {
@@ -124,7 +126,8 @@ int main() {
         // Convert float to string and update text
         // (std::to_string can result in "0.500000", so we can substring it if
         // we want it cleaner, but raw to_string is fine for now)
-        eText.setString("e = " + std::to_string(e).substr(0, 3));
+        eText.setString("elasticity coefficient = " +
+                        std::to_string(e).substr(0, 3));
 
         // Recalculate position to keep it in the bottom right
         // We do this every frame in case the text width changes (e.g. 0.9
