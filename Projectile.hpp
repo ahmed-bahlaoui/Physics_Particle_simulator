@@ -1,3 +1,4 @@
+#pragma once
 #include <SFML/Graphics.hpp>
 #include <cmath>
 #include <iostream>
@@ -30,8 +31,8 @@ class Vector2D {
 
     float magnitude() const { return sqrt(x * x + y * y); }
 
-    float getX() { return x; };
-    float getY() { return y; };
+    float getX() const { return x; };
+    float getY() const { return y; };
     void setX(float newX) { x = newX; }
     void setY(float newY) { y = newY; }
 };
