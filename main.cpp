@@ -40,7 +40,6 @@ std::vector<Projectile> spawnProjectiles(int n) {
 int main() {
     sf::RenderWindow window(sf::VideoMode({window_width, window_height}),
                             "Physics Collision Simulation");
-    // window.setFramerateLimit(MAX_FRAMERATE);
     window.setVerticalSyncEnabled(true);
     // --- UI LAYOUT SETUP ---
     float uiY = window_height - 50.f; // The common baseline height
@@ -82,6 +81,7 @@ int main() {
     // 2. SETUP Physics
 
     float dt = 0.1;
+    bool isPaused = false;
     // Start with elastic collision
     float e = 1.0f;
     projectiles =
@@ -115,6 +115,9 @@ int main() {
                 if (keyPress->code == sf::Keyboard::Key::R) {
                     projectiles = spawnProjectiles(projectileSlider.getValue());
                 }
+                if (keyPress->code == sf::Keyboard::Key::P) {
+                    isPaused = !isPaused;
+                }
             }
         }
 
@@ -126,62 +129,89 @@ int main() {
                         std::to_string(e).substr(0, 3));
 
         // 2. NEW: Calculate the width and anchor it to the bottom-right
-        sf::FloatRect textBounds = eText.getLocalBounds();
+        sf::FloatRect textBounds2 = eText.getLocalBounds();
         eText.setPosition({
-            window_width - textBounds.size.x - 20.f, uiY // 20px padding
+            window_width - textBounds2.size.x - 20.f, uiY // 20px padding
         });
 
         countText.setString(
             "Count: " + std::to_string(projectileSlider.getValue()) +
             " (Press R)");
-        // =====================================================
-        // PHASE 1: UPDATE PHYSICS 🏃
-        // =====================================================
-        for (auto &p : projectiles) {
-            p.update(dt);
-            p.checkBoundaries(window_width, window_height);
-        }
 
-        // =====================================================
-        // PHASE 2: BUILD QUADTREE 🌳
-        // =====================================================
-        // Create the tree ONCE per frame
-        Rectangle root_boundary(0, 0, window_width, window_height);
-        QuadTree root(root_boundary, 4);
+        if (!isPaused) {
+            // =====================================================
+            // PHASE 1: UPDATE PHYSICS 🏃
+            // =====================================================
+            for (auto &p : projectiles) {
+                p.update(dt);
+                p.checkBoundaries(window_width, window_height);
+            }
 
-        // Fill it with ALL particles
-        for (auto &p : projectiles) {
-            root.insert(&p);
-        }
+            // =====================================================
+            // PHASE 2: BUILD QUADTREE 🌳
+            // =====================================================
+            // Create the tree ONCE per frame
+            Rectangle root_boundary(0, 0, window_width, window_height);
+            QuadTree root(root_boundary, 4);
 
-        // =====================================================
-        // PHASE 3: RESOLVE COLLISIONS 💥
-        // =====================================================
-        for (auto &p : projectiles) {
-            // Define search area around the particle
-            float r = p.getRadius();
-            // Search slightly larger area (r*2) to catch touching neighbors
-            Rectangle range(
-                p.getPosition().getX() - (r * 2), // Start 2 radii to the left
-                p.getPosition().getY() - (r * 2), // Start 2 radii up
-                r * 4,                            // Width is 4 radii
-                r * 4                             // Height is 4 radii
-            );
-            // Ask tree for neighbors
-            std::vector<Projectile *> neighbors;
-            root.query(range, neighbors);
+            // Fill it with ALL particles
+            for (auto &p : projectiles) {
+                root.insert(&p);
+            }
 
-            // Check collision only against these neighbors
-            for (Projectile *other : neighbors) {
-                if (&p == other)
-                    continue; // Don't check self
+            // =====================================================
+            // PHASE 3: RESOLVE COLLISIONS 💥
+            // =====================================================
+            for (auto &p : projectiles) {
+                // Define search area around the particle
+                float r = p.getRadius();
+                // Search slightly larger area (r*2) to catch touching neighbors
+                Rectangle range(
+                    p.getPosition().getX() -
+                        (r * 2), // Start 2 radii to the left
+                    p.getPosition().getY() - (r * 2), // Start 2 radii up
+                    r * 4,                            // Width is 4 radii
+                    r * 4                             // Height is 4 radii
+                );
+                // Ask tree for neighbors
+                std::vector<Projectile *> neighbors;
+                root.query(range, neighbors);
 
-                if (p.isColliding(*other)) {
-                    p.resolveCollision(*other, e);
+                // Check collision only against these neighbors
+                for (Projectile *other : neighbors) {
+                    if (&p == other)
+                        continue; // Don't check self
+
+                    if (p.isColliding(*other)) {
+                        p.resolveCollision(*other, e);
+                    }
                 }
             }
         }
+        if (isPaused) {
+            eText.setString("PAUSED (Resume by pressing: P)");
+            eText.setFillColor(
+                sf::Color::Red); // Optional: Make it red when paused!
+        } else {
+            eText.setString("elasticity coefficient = " +
+                            std::to_string(e).substr(0, 3));
+            if (bg_color == sf::Color::White) {
 
+            } else {
+                eText.setFillColor(sf::Color::White);
+            }
+        }
+        // 2. CRITICAL: Recalculate width and position AFTER setting the string
+        sf::FloatRect textBounds = eText.getLocalBounds();
+        eText.setPosition({
+            window_width - textBounds.size.x -
+                50.f, // Align to right edge based on NEW width
+            uiY       // Keep the bottom alignment
+        });
+
+        countText.setString(
+            "Count: " + std::to_string(projectileSlider.getValue()) +
+            " (Press R)");
         // =====================================================
         // PHASE 4: RENDER 🎨
         // =====================================================
