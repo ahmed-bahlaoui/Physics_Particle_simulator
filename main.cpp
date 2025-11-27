@@ -40,7 +40,8 @@ std::vector<Projectile> spawnProjectiles(int n) {
 int main() {
     sf::RenderWindow window(sf::VideoMode({window_width, window_height}),
                             "Physics Collision Simulation");
-    window.setFramerateLimit(MAX_FRAMERATE);
+    // window.setFramerateLimit(MAX_FRAMERATE);
+    window.setVerticalSyncEnabled(true);
     // --- UI LAYOUT SETUP ---
     float uiY = window_height - 50.f; // The common baseline height
 
