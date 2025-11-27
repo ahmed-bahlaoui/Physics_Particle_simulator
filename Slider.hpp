@@ -31,27 +31,31 @@ class SimpleSlider {
 
     // Update logic (call this every frame)
     void update(const sf::RenderWindow &window) {
-        // Check if mouse is clicking/dragging
         if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-            sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+            // OLD WAY (Breaks on resize):
+            // sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+
+            // NEW WAY (Fixes resize):
+            // Convert screen pixels to world coordinates
+            sf::Vector2f mousePos =
+                window.mapPixelToCoords(sf::Mouse::getPosition(window));
+
             sf::FloatRect knobBounds = knob.getGlobalBounds();
 
-            // Allow dragging if we click the knob OR the track
-            if (knobBounds.contains(sf::Vector2f(mousePos)) ||
-                track.getGlobalBounds().contains(sf::Vector2f(mousePos)) ||
-                isDragging) {
+            // Remove the "sf::Vector2f" cast below since mousePos is already a
+            // float vector now
+            if (knobBounds.contains(mousePos) ||
+                track.getGlobalBounds().contains(mousePos) || isDragging) {
                 isDragging = true;
 
-                // Move knob to mouse X, clamped to the track width
                 float trackLeft = track.getPosition().x;
                 float trackRight = trackLeft + track.getSize().x;
-                float newX =
-                    std::clamp((float)mousePos.x, trackLeft, trackRight);
 
-                knob.setPosition({newX, track.getPosition().y +
-                                            2}); // +2 for visual alignment
+                // mousePos.x is already a float now
+                float newX = std::clamp(mousePos.x, trackLeft, trackRight);
 
-                // Calculate value based on percentage
+                knob.setPosition({newX, track.getPosition().y + 2});
+
                 float percentage = (newX - trackLeft) / track.getSize().x;
                 currentValue = minValue + percentage * (maxValue - minValue);
             }

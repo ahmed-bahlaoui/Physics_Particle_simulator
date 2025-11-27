@@ -5,12 +5,12 @@
 #include <algorithm> // <--- NEW: Needed for std::clamp (optional but good)
 #include <string>    // <--- NEW: Needed to convert float to string
 #include <vector>
-
+#define MAX_PROJECTILE_COUNT 500
 #define MAX_FRAMERATE 60
 
 vector<Projectile> projectiles;
-unsigned int window_height = 600;
-unsigned int window_width = 800;
+unsigned int window_height = 1080;
+unsigned int window_width = 1920;
 std::vector<Projectile> spawnProjectiles(int n) {
     std::vector<Projectile> new_list;
     for (int i = 0; i < n; i++) {
@@ -54,7 +54,7 @@ int main() {
         // and change the path to "arial.ttf"
         return -1;
     }
-    int projectile_count = 50;
+    int projectile_count = 200;
     sf::Color bg_color = sf::Color::White;
     sf::Text eText(font);
     eText.setCharacterSize(24);
@@ -66,7 +66,8 @@ int main() {
     // ------------------------------
 
     // Create a slider: X=50, Y=550, Width=200, Range=1 to 100, Start=20
-    SimpleSlider projectileSlider(50.f, uiY, 200.f, 1.f, 100.f,
+    SimpleSlider projectileSlider(50.f, uiY, 200.f, 1.f,
+                                  (float)MAX_PROJECTILE_COUNT,
                                   (float)projectile_count);
     sf::Text countText(font);
     countText.setCharacterSize(20);
