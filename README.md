@@ -9,7 +9,11 @@ A real-time 2D physics engine built from scratch in C++ using SFML. It features 
 - **Interactive UI:**
   - **Slider:** Adjust particle count dynamically.
   - **Elasticity:** Change coefficient of restitution (bounciness) in real-time.
-  - **Pause Mode:** Freeze time to inspect collisions.
+  - **Pause Mode:** Freeze time
+
+https://github.com/user-attachments/assets/8940579d-22ee-486f-bcef-6bb9929f8fb7
+
+o inspect collisions.
 
 ## 🎮 Controls
 
