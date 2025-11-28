@@ -14,14 +14,17 @@ unsigned int window_width = 1920;
 std::vector<Projectile> spawnProjectiles(int n) {
     std::vector<Projectile> new_list;
     for (int i = 0; i < n; i++) {
-        float random_mass = (10 * (float)rand() / RAND_MAX) + 5;
-        float random_radius = (10 * (float)rand() / RAND_MAX) + 10; // [5, 20]
-        float random_X =
-            window_width * ((float)rand() / RAND_MAX); // [0,window_width]
-        float random_Y =
-            window_height * ((float)rand() / RAND_MAX); // [0,window_height];
-        float random_Vx = (100 * (float)rand() / RAND_MAX) - 50; //[-50, 50]
-        float random_Vy = (100 * (float)rand() / RAND_MAX) - 50; //[-50, 50]
+        float random_mass = (10 * static_cast<float>(rand()) / RAND_MAX) + 5;
+        float random_radius =
+            (10 * static_cast<float>(rand()) / RAND_MAX) + 10; // [5, 20]
+        float random_X = window_width * (static_cast<float>(rand()) /
+                                         RAND_MAX); // [0,window_width]
+        float random_Y = window_height * (static_cast<float>(rand()) /
+                                          RAND_MAX); // [0,window_height];
+        float random_Vx =
+            (150 * static_cast<float>(rand()) / RAND_MAX) - 50; //[-50, 1ß0]
+        float random_Vy =
+            (150 * static_cast<float>(rand()) / RAND_MAX) - 50; //[-50, 50]
         if (i % 2 == 0) {
             // color RED
             new_list.push_back(Projectile(
@@ -67,8 +70,8 @@ int main() {
 
     // Create a slider: X=50, Y=550, Width=200, Range=1 to 100, Start=20
     SimpleSlider projectileSlider(50.f, uiY, 200.f, 1.f,
-                                  (float)MAX_PROJECTILE_COUNT,
-                                  (float)projectile_count);
+                                  static_cast<float>(MAX_PROJECTILE_COUNT),
+                                  static_cast<float>(projectile_count));
     sf::Text countText(font);
     countText.setCharacterSize(20);
     countText.setPosition({270.f, uiY}); // Next to slider
@@ -80,10 +83,10 @@ int main() {
 
     // 2. SETUP Physics
 
-    float dt = 0.1;
     bool isPaused = false;
     // Start with elastic collision
     float e = 1.0f;
+    float dt = 1e-1;
     projectiles =
         spawnProjectiles(projectile_count); // Let's start with 50 balls!
 
@@ -143,6 +146,7 @@ int main() {
             // PHASE 1: UPDATE PHYSICS 🏃
             // =====================================================
             for (auto &p : projectiles) {
+
                 p.update(dt);
                 p.checkBoundaries(window_width, window_height);
             }
