@@ -3,7 +3,7 @@ build/
 cmake-build-debug/
 cmake-build-release/
 
-
+assets/
 # 2. Compiled Object Files & Executables
 *.exe
 *.o
