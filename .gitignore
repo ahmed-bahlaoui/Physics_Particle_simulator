@@ -1,0 +1,31 @@
+# 1. Build Directories (Ignore ALL build folders)
+build/
+cmake-build-debug/
+cmake-build-release/
+
+
+# 2. Compiled Object Files & Executables
+*.exe
+*.o
+*.obj
+
+# 3. CMake Generated Files (Keep CMakeLists.txt!)
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# 4. OS & IDE Specifics
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# 5. Libraries/DLLs (Professional: Don't commit binaries)
+*.dll
+*.lib
+*.a
+
+# 6. Archives
+*.rar
+*.zip
